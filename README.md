@@ -104,7 +104,7 @@ Try generating stories about:
 
 ## Sample Stories
 
-You can find example generated stories in `sample_stories.txt`, which were created using the `generate_sample_stories.ps1` script. These stories demonstrate various themes and the system's ability to generate engaging, child-friendly content.
+You can find example generated stories in (sample_stories.txt), which were created using the (generate_sample_stories.ps1) script. These stories demonstrate various themes and the system's ability to generate engaging, child-friendly content.
 
 ## Important Notes
 
