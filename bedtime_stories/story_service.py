@@ -17,9 +17,9 @@ load_dotenv()
 class BedtimeStoryService:
     """Service for generating and validating bedtime stories."""
     
-    SCORE_THRESHOLD = 60  # Minimum acceptable score
+    SCORE_THRESHOLD = 80  # Minimum acceptable score
     MAX_ATTEMPTS = 5      # Maximum number of generation attempts
-    MODEL_NAME = "gpt-3.5-turbo"  # Using GPT-3.5-turbo for better cost efficiency
+    MODEL_NAME = "gpt-3.5-turbo"  
     
     def __init__(self):
         """Initialize the story service."""
@@ -54,7 +54,7 @@ class BedtimeStoryService:
         Returns:
             Float score between 0 and 100
         """
-        # Look for patterns like "93/100" or "Total: 93" or "Final Score: 93"
+        # First try to find explicit total score
         score_patterns = [
             r"Total:\s*(\d+)/100",
             r"Final Score:\s*(\d+)/100",
@@ -74,7 +74,33 @@ class BedtimeStoryService:
                 except ValueError:
                     continue
         
-        # If no pattern matched, try to find any number followed by /100
+        # If no explicit total score, try to sum component scores
+        component_scores = {
+            "Safety & Guardrails": 40,  # Max score
+            "Structure": 20,
+            "Child Engagement": 20,
+            "Literary Quality": 20
+        }
+        
+        total_score = 0
+        found_any_score = False
+        
+        for component, max_score in component_scores.items():
+            # Look for patterns like "Safety & Guardrails: 38/40" or "Structure: 18/20"
+            pattern = rf"{component}:\s*(\d+)/{max_score}"
+            match = re.search(pattern, evaluation, re.IGNORECASE | re.MULTILINE)
+            if match:
+                try:
+                    total_score += float(match.group(1))
+                    found_any_score = True
+                except ValueError:
+                    continue
+        
+        # Only return summed score if we found at least one component score
+        if found_any_score:
+            return total_score
+            
+        # If no pattern matched and no component scores found, try to find any number followed by /100
         match = re.search(r"(\d+)/100", evaluation)
         if match:
             try:
