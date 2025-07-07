@@ -1,0 +1,212 @@
+# Bedtime Story Generation System
+## A RAG-based AI Story Generator with Safety Guardrails
+
+### Project Overview
+This project implements a safe, child-friendly bedtime story generation system using Retrieval-Augmented Generation (RAG) with strict safety guardrails. The system combines existing bedtime stories as inspiration with AI generation to create new, soothing stories suitable for children aged 3-8 years.
+
+### Core Components
+
+1. Story Data Management
+   - CSVStoryLoader: Loads and processes stories from a CSV file
+   - Stories are treated as complete chunks (no splitting)
+   - Each story maintains its narrative integrity
+
+2. Vector Storage & Retrieval
+   - Uses FAISS for efficient vector storage and similarity search
+   - Sentence-transformers (all-MiniLM-L6-v2) for text embeddings
+   - Persistent index storage for reuse across sessions
+
+3. Story Generation Service
+   - Combines RAG with OpenAI's GPT models
+   - Implements strict safety checks and guardrails
+   - Ensures consistent, child-appropriate content
+
+4. Safety System
+   - Multi-layer safety approach:
+     a) Preventive (Generation Guardrails)
+     b) Detective (Story Judge)
+   - Automatic validation of all generated content
+   - Explicit rejection of unsafe content
+
+### Workflow
+
+1. Index Building
+   ```
+   python -m bedtime_stories.cli index --csv stories.csv
+   ```
+   - Loads stories from CSV
+   - Creates embeddings
+   - Builds FAISS index
+   - Saves index for future use
+
+2. Story Generation
+   ```
+   python -m bedtime_stories.cli tell "story theme"
+   ```
+   - Retrieves similar stories from index
+   - Uses them as context for generation
+   - Applies safety guardrails
+   - Returns only safe, suitable stories
+
+3. Story Evaluation (Optional)
+   ```
+   python -m bedtime_stories.cli judge "story text"
+   ```
+   - Evaluates any story against safety criteria
+   - Provides detailed feedback
+   - Scores across multiple categories
+
+### Safety Guardrails
+
+1. Tone & Style Guardrails
+   - Calming, reassuring language only
+   - Soft, warm descriptions
+   - No harsh or aggressive language
+
+2. Content Safety
+   - No violence or threats
+   - No scary elements (monsters, ghosts)
+   - No death or loss themes
+   - No separation anxiety
+   - No inappropriate content
+   - Gentle lessons only
+
+3. Character Guidelines
+   - Kind, relatable protagonists
+   - Friendly supporting characters
+   - No antagonists or cruel characters
+
+4. Plot & Conflict
+   - Simple, safe "problems"
+   - Magical, fun adventures
+   - Always ends safely
+   - No unresolved tension
+
+5. Imagery Rules
+   - Soothing, positive imagery only
+   - No dark or frightening elements
+   - No dangerous situations
+
+6. Emotional Safety
+   - Focus on security and comfort
+   - No cliffhangers
+   - Consistent emotional support
+
+7. Language Requirements
+   - Age-appropriate vocabulary
+   - Rhythmic, flowing sentences
+
+### Prompt System
+
+1. Generation Prompt
+   - Structure guidance (4 parts):
+     a) Cozy beginning
+     b) Gentle middle
+     c) Mild climax
+     d) Peaceful ending
+   - Explicit guardrail requirements
+   - Similar story examples as context
+   - Clear safety boundaries
+
+2. Judge Prompt
+   Uses GPT to evaluate stories across 4 categories (100 points total):
+   
+   a) Safety & Guardrails (40 points)
+      - Tone & Style (10)
+      - Content Safety (10)
+      - Character Safety (10)
+      - Emotional Safety (10)
+
+   b) Structure (20 points)
+      - Beginning
+      - Middle
+      - Climax
+      - Ending
+      - Transitions
+
+   c) Child Engagement (20 points)
+      - Age-appropriate language
+      - Clarity
+      - Engagement level
+      - Soothing qualities
+
+   d) Literary Quality (20 points)
+      - Narrative voice
+      - Rhythm
+      - Sensory details
+      - Theme clarity
+
+   Implementation Details:
+   - Makes a separate GPT API call for evaluation
+   - Uses a specialized prompt focused on story analysis
+   - Provides structured feedback through the AI model
+   - Acts as an independent safety validator
+   - Can be used both automatically during generation and manually for story evaluation
+
+### Technical Implementation
+
+1. Dependencies
+   - langchain: RAG implementation
+   - faiss-cpu: Vector storage
+   - sentence-transformers: Text embeddings
+   - openai: Story generation
+   - python-dotenv: Configuration
+
+2. File Structure
+   ```
+   bedtime_stories/
+   ├── __init__.py
+   ├── cli.py
+   ├── data_loader.py
+   ├── index_manager.py
+   ├── prompt_builder.py
+   ├── judge.py
+   └── story_service.py
+   ```
+
+3. Configuration
+   - .env file for API keys
+   - Persistent index storage
+   - CSV data source
+
+### Best Practices
+
+1. Story Generation
+   - Keep themes gentle and positive
+   - Focus on wonder and discovery
+   - Maintain consistent pacing
+   - End with comfort and security
+
+2. Safety Checks
+   - Multiple validation layers
+   - Automatic content screening
+   - Explicit guardrail enforcement
+   - No exceptions to safety rules
+
+3. User Experience
+   - Simple CLI interface
+   - Clear error messages
+   - Persistent index for speed
+   - Flexible theme options
+
+### Usage Guidelines
+
+1. Story Themes
+   - Focus on positive emotions
+   - Use gentle adventures
+   - Include friendly characters
+   - Suggest peaceful activities
+
+2. Generation Tips
+   - Be specific in theme requests
+   - Avoid complex scenarios
+   - Keep emotional stakes low
+   - Emphasize comfort and safety
+
+3. Evaluation
+   - Regular safety audits
+   - Content quality checks
+   - Consistent monitoring
+   - User feedback integration
+
+This system prioritizes child safety and emotional well-being while creating engaging, soothing bedtime stories. The combination of RAG, strict guardrails, and comprehensive evaluation ensures consistently appropriate and calming content for young listeners. 

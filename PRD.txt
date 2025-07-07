@@ -1,0 +1,168 @@
+**Product Requirements Document (PRD)**
+
+**Project Name:** Bedtime Stories RAG + Judge System
+**Author:** \[Your Name]
+**Date:** July 6, 2025
+
+---
+
+## 1. Purpose & Background
+
+**Purpose:**
+Build an end-to-end pipeline that uses retrieval-augmented generation (RAG) and an automated LLM-based judge to generate high-quality bedtime stories for children ages 5–10. The system must be modular, extensible, and production-ready, enabling non-technical users to index new story corpora and generate stories via a simple CLI or API.
+
+**Background:**
+
+* Children’s engagement with read-aloud content impacts literacy and imagination.
+* Off-the-shelf LLM outputs can lack consistent narrative structure, age-appropriate language, or produce unintended content.
+* RAG can ground outputs in curated story fragments; an automated judge ensures story quality and safety.
+
+---
+
+## 2. Goals & Success Metrics
+
+**Primary Goals:**
+
+1. **Structured Narratives:** Guarantee each story follows a four-part arc (Beginning, Middle, Climax, End).
+2. **Age-Appropriate Vocabulary:** Ensure language remains at or below 4th grade reading level.
+3. **Safety & Hallucination Control:** Prevent disallowed content (violence, adult themes) and hallucinated elements outside reference snippets.
+4. **Extensible Indexing:** Allow adding new story datasets with minimal developer effort.
+5. **User Simplicity:** Provide a clear CLI (or future API) for indexing and story generation.
+
+**Success Metrics:**
+
+* **Retrieval Accuracy:** ≥80% of retrieved snippets rated relevant by human evaluators.
+* **Judge Approval Rate:** ≥90% of auto-generated stories pass the judge without requiring regen.
+* **Reading-Level Score:** Flesch-Kincaid Grade ≤4 on ≥95% of final stories.
+* **End-to-End Latency:** ≤3 seconds per `tell` command on typical hardware (16GB RAM).
+* **User Satisfaction:** ≥4 out of 5 in initial stakeholder feedback surveys.
+
+---
+
+## 3. Target Users & Personas
+
+1. **Non-Technical Story Curators**
+
+   * Role: Librarians, educators, content managers.
+   * Needs: Easily upload CSVs of story texts and generate new, themed stories without writing code.
+2. **Developers/Engineers**
+
+   * Role: Backend engineers integrating the system into larger platforms.
+   * Needs: Modular codebase, clear extension points (custom judge rules, new retrieval backends).
+3. **Parents & Children** (End Consumers)
+
+   * Role: Final recipients of the bedtime stories.
+   * Needs: Engaging, safe, age-appropriate stories that can be personalized by theme.
+
+---
+
+## 4. User Stories
+
+| ID  | As a…         | I want to…                                             | So that…                                   |
+| --- | ------------- | ------------------------------------------------------ | ------------------------------------------ |
+| US1 | Story Curator | index a CSV of children’s stories via CLI              | the system can retrieve reference snippets |
+| US2 | Story Curator | generate a bedtime story using a theme                 | I can read a new story each night          |
+| US3 | Story Curator | specify custom `--max-tokens` or `--top-k` flags       | I can fine-tune generation length & scope  |
+| US4 | Parent        | get only safe, kid-friendly stories                    | I don’t worry about inappropriate content  |
+| US5 | Developer     | swap FAISS for Chroma or change embedding model easily | I can adapt the system to future needs     |
+
+---
+
+## 5. Functional Requirements
+
+1. **Data Loading & Indexing**
+
+   * FR1.1: `bedtime_stories index --csv <path>` reads a CSV with `story_text` and optional metadata.
+   * FR1.2: Auto-chunk long texts into ≤300-token segments.
+   * FR1.3: Embed texts via SentenceTransformer and store in FAISS index.
+2. **Story Generation**
+
+   * FR2.1: `bedtime_stories tell "<theme>"` triggers the pipeline.
+   * FR2.2: Embed user theme, retrieve top-3 similar snippets, assemble GPT-4 prompt with four-part arc scaffold.
+   * FR2.3: Call `openai.ChatCompletion.create()` to generate the draft.
+3. **Automated Judging & Revision**
+
+   * FR3.1: Judge rates each arc part and checks reading level & hallucinations.
+   * FR3.2: If judge returns “APPROVED,” output story; otherwise, perform one automatic revision pass.
+4. **Configuration & Error Handling**
+
+   * FR4.1: Read `OPENAI_API_KEY` from environment or `.env` file.
+   * FR4.2: Handle missing/invalid CSV, empty index, API errors, and log errors clearly.
+5. **Testing & CI**
+
+   * FR5.1: Pytest unit tests for each module with mocked OpenAI and FAISS calls.
+   * FR5.2: Linting (flake8/black) and automated test runs in CI.
+
+---
+
+## 6. Non-Functional Requirements
+
+* **Performance:** ≤3s per story generation on commodity hardware.
+* **Scalability:** Support indexing up to 5,000 story chunks without linear slowdown.
+* **Maintainability:** Code coverage ≥80%, clear module boundaries, PEP8 compliance.
+* **Security & Privacy:** No PII storage, API key never committed.
+* **Portability:** Work on Linux, macOS, and WSL setups.
+
+---
+
+## 7. Architecture Overview
+
+**Components:**
+
+1. **CSVStoryLoader** (`data_loader.py`)
+2. **EmbeddingModel & VectorStore** (`index_manager.py`)
+3. **RAGPromptBuilder** (`prompt_builder.py`)
+4. **LLMJudge** (`judge.py`)
+5. **BedtimeStoryService & CLI** (`story_service.py`, `cli.py`)
+
+**Data Flow Diagram:**
+
+```mermaid
+flowchart LR
+  U[User: theme] --> CLI[CLI]
+  CLI --> Service[BedtimeStoryService]
+  Service --> Loader[CSVStoryLoader]
+  Service --> Index[IndexManager]
+  Service --> Builder[RAGPromptBuilder]
+  Service --> OpenAI[GPT-4 API]
+  Service --> Judge[LLMJudge]
+  Judge --> Service
+  Service --> CLI
+  CLI --> O[Output: Final Story]
+```
+
+---
+
+## 8. Success Metrics & KPIs
+
+* **Retrieval Relevance:** ≥80% positive human ratings
+* **Judge Pass Rate:** ≥90% “APPROVED” on first pass
+* **Readability:** Flesch-Kincaid Grade ≤4 on ≥95% stories
+* **Latency:** Median end-to-end <3s
+* **Coverage:** ≥80% code coverage in tests
+
+---
+
+## 9. Milestones & Timeline (2–3 weeks)
+
+| Week | Milestone                                    |
+| ---- | -------------------------------------------- |
+| 1    | Project setup, data loader, index manager    |
+| 2    | Prompt builder, story service, CLI           |
+| 3    | LLM judge, revision loop, unit tests, README |
+| 4    | Performance tuning, CI, sample demos         |
+
+---
+
+## 10. Risks & Mitigations
+
+| Risk                                 | Mitigation                                                             |
+| ------------------------------------ | ---------------------------------------------------------------------- |
+| Hallucinations slip past judge       | Add stricter hallucination rules and optional human review flag in CLI |
+| API rate limits or outages           | Implement exponential backoff; allow offline index querying            |
+| Retrieval returns off-topic snippets | Tune embedding threshold; add metadata filters (e.g. category)         |
+| Large index rebuilds too slow        | Persist index to disk; support incremental upserts                     |
+
+---
+
+*End of PRD*
