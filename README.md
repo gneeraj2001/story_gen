@@ -57,15 +57,14 @@ A RAG-based AI system that generates safe, soothing bedtime stories for children
 
 3. **Generate Stories**
    ```bash
-   # Build index (required once)
-   python -m bedtime_stories.cli index --csv stories.csv
-
-   # Generate a story
+   # The vector store is already built and committed, so you can directly generate stories:
    python -m bedtime_stories.cli tell "a friendly cloud that brings rainbow rain"
 
    # Generate with detailed feedback
    python -m bedtime_stories.cli tell "a friendly cloud that brings rainbow rain" --verbose
    ```
+
+   Note: The index building step (`python -m bedtime_stories.cli index --csv stories.csv`) is not required as the vector store is pre-built and included in the repository.
 
 ## Features
 
