@@ -42,4 +42,8 @@ Thumbs.db
 # Project specific
 *.log
 stories.csv  # if you don't want to include the source stories
-vector_store/  # FAISS index files 
+vector_store/  # FAISS index files
+
+# Documentation
+PRD.md
+summary.md 
