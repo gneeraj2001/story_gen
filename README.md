@@ -67,13 +67,6 @@ A RAG-based AI system that generates safe, soothing bedtime stories for children
    python -m bedtime_stories.cli tell "a friendly cloud that brings rainbow rain" --verbose
    ```
 
-## Troubleshooting
-
-- **API Key Issues**: Ensure valid OpenAI API key in `.env`
-- **Index Error**: Run index command before generating stories
-- **Module Error**: Verify virtual environment is activated
-- **Rate Limits**: Check OpenAI account quota
-
 ## Features
 
 - Safe, child-friendly story generation
