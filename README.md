@@ -99,26 +99,14 @@ Try generating stories about:
 
 You can find example generated stories in `sample_stories.txt`, which were created using the `generate_sample_stories.ps1` script. These stories demonstrate various themes and the system's ability to generate engaging, child-friendly content.
 
-## Important Notes
-
-- You must have an OpenAI API key to use this system
-- First-time API key setup:
-  1. Sign up at [OpenAI](https://platform.openai.com/signup)
-  2. Create an API key at [API Keys](https://platform.openai.com/api-keys)
-  3. Add the key to your `.env` file
-- Stories are automatically evaluated for quality
-- A score of 80/100 or higher is required for acceptance
-- The system will make up to 5 attempts to generate a suitable story
-- The best version is returned, even if below threshold
-
 ## Future Work
 
 1. **Part-Based Story Generation with Progressive Feedback**
-   - Implement staged generation pipeline (setup, rising action, climax, resolution) with component-specific evaluation
+   - Implement a staged generation pipeline (setup, rising action, climax, resolution) with component-specific evaluation
    - Use real-time feedback and context to guide subsequent parts while maintaining narrative coherence
-   - This would also help overcome RAG limitations (if the chunked stories are big), with a part by part chunking strategy
+   - This would also help overcome RAG limitations (if the chunked stories are big), with a part-by-part chunking strategy
 
 2. **Story Part Collation and Smoothing System**
-   - Develop intelligent collation system to combine individually generated parts into cohesive stories
+   - Develop an intelligent collation system to combine individually generated parts into cohesive stories
    - Implement context-aware smoothing to ensure seamless transitions between story segments
 
