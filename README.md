@@ -24,7 +24,7 @@ A RAG-based AI system that generates safe, soothing bedtime stories for children
 3. **Quality Control**
    - Evaluates story against safety criteria
    - Scores on structure, engagement, and safety
-   - Regenerates if below quality threshold (60/100)
+   - Regenerates if below quality threshold (80/100)
    - Returns best version after max 5 attempts
 
 ## Quick Setup
